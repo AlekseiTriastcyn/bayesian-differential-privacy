@@ -11,7 +11,7 @@ from scipy.stats import t, binom
 from scipy.special import logsumexp
 
 
-def scaled_renyi_gaussian(alphas, ldistr, rdistr=None):
+def scaled_renyi_gaussian(alphas, ldistr, rdistr):
     """
         Computes scaled Renyi divergence D(p_left|p_right) between pairs of Gaussian distributions (with the same variance).
         

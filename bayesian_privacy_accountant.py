@@ -29,12 +29,12 @@ class BayesianPrivacyAccountant:
             ----------
             power : number, required
                 Order of the Renyi divergence used in accounting.
-            scaled_renyi_fn : function, required
-                Function pointer to compute scaled Renyi divergence (defines privacy mechanism). 
-                If None, sampled Gaussian mechanism is assumed.
             total_steps : number, optional
                 Total number of privacy mechanism invocations envisioned.
                 Only needed if bayesianDP==True. Can be an upper bound.
+            scaled_renyi_fn : function, required
+                Function pointer to compute scaled Renyi divergence (defines privacy mechanism). 
+                If None, sampled Gaussian mechanism is assumed.
             conf : number, required
                 Required confidence level in Bayesian accounting (only used if bayesianDP==True).
             bayesianDP : boolean, optional
@@ -88,14 +88,12 @@ class BayesianPrivacyAccountant:
             return target_eps, np.min(np.exp(self.privacy_cost - self.powers * target_eps))
     
     
-    def accumulate(self, ldistr, rdistr=None, q=1, steps=1):
+    def accumulate(self, ldistr, rdistr, q=1, steps=1):
         """
             Accumulates privacy cost for a given number of steps.
             
             Parameters
             ----------
-            scaled_renyi_div_fn : function, required
-                Function pointer to compute scaled Renyi divergence.
             ldistr : tuple or array, required
                 Parameters of the left distribution (i.e., imposed by D).
             rdistr : tuple or array, required
@@ -146,13 +144,9 @@ class BayesianPrivacyAccountant:
             out : tuple
                 Total privacy cost and log confidence.
         """
-        #logmgf_samples = []
-        #for ld, rd in zip(ldistr, rdistr):
         c_L = self._log_binom_expect(power + 1, q, scaled_renyi_fn, ldistr, rdistr)
         c_R = self._log_binom_expect(power + 1, q, scaled_renyi_fn, rdistr, ldistr)
-        #logmgf_samples += [self.holder_correction * steps * torch.max(c_L, c_R)]
         logmgf_samples = self.holder_correction * steps * torch.max(c_L, c_R).cpu().numpy()
-        #logmgf_samples = np.array(logmgf_samples)
         n_samples = np.size(logmgf_samples)
 
         if not self.bayesianDP:
@@ -192,15 +186,17 @@ class BayesianPrivacyAccountant:
                 Number of Bernoulli trials.
             p : number, required
                 Probability of success.
-            inner_log_fn : function, required
-                Log function inside expectation.
-            inner_log_fn_args : tuple or array, required
-                Arguments of the log function inside expectation.
+            scaled_renyi_fn : function, required
+                Function pointer to compute scaled Renyi divergence (inside Bernoulli expectation).
+            ldistr : tuple or array, required
+                Parameters of the left distribution (i.e., imposed by D).
+            rdistr : tuple or array, required
+                Parameters of the right distribution (i.e., imposed by D').
 
             Returns
             -------
             out : tuple
-                Logarithm of expectation of inner_log_fn over binomial distribution.
+                Logarithm of expectation of scaled_renyi_fn over binomial distribution.
         """
         k = torch.arange(n + 1, dtype=torch.float)
         log_binom_coefs = torch.tensor(binom.logpmf(k, n=n, p=p))
