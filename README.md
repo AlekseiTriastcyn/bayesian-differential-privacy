@@ -1,4 +1,4 @@
-# bayesian-differential-privacy
+# Bayesian Differential Privacy
 Code for the paper "Bayesian Differential Privacy for Machine Learning".
 
 The main code for Bayesian accounant is located in ``bayesian_privacy_accounant.py``.
