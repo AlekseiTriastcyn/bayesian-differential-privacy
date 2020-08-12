@@ -9,8 +9,8 @@ IPython notebooks contains experiments from the paper.
 Please cite our paper if find the code helpful:
 
 ```
-@InProceedings{triastcyn2020bayesian,
-  author    = {Triastcyn, Aleksei  and  Faltings, Boi},
+@inproceedings{triastcyn2020bayesian,
+  author    = {Triastcyn, Aleksei and Faltings, Boi},
   title     = {Bayesian Differential Privacy for Machine Learning},
   booktitle = {International Conference on Machine Learning},
   year      = {2020}
